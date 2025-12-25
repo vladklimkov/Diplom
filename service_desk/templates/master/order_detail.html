@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Мастер: заявка #{{ order.id }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h5">Заявка #{{ order.id }}</h1>
+        <div class="text-muted mb-3">Статус: <b>{{ order.get_status_display }}</b></div>
+
+        <dl class="row">
+          <dt class="col-sm-4">Категория</dt><dd class="col-sm-8">{{ order.category }}</dd>
+          <dt class="col-sm-4">Клиент</dt><dd class="col-sm-8">{{ order.customer_name }} ({{ order.customer_contact }})</dd>
+          <dt class="col-sm-4">Адрес</dt><dd class="col-sm-8">{{ order.address|default:"-" }}</dd>
+          <dt class="col-sm-4">Описание</dt><dd class="col-sm-8">{{ order.description }}</dd>
+        </dl>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-warning" onclick="startOrder({{ order.id }})">Начать</button>
+          <button class="btn btn-success" onclick="completeOrder({{ order.id }})">Завершить</button>
+          {% if map_url %}<a class="btn btn-outline-primary" target="_blank" href="{{ map_url }}">Карта</a>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6">История</h2>
+        <div class="list-group">
+          {% for h in history %}
+            <div class="list-group-item">
+              <div class="small text-muted">{{ h.timestamp|date:"d.m.Y H:i" }}</div>
+              <div><b>{{ h.old_status }}</b> → <b>{{ h.new_status }}</b></div>
+              {% if h.comment %}<div class="small text-muted">{{ h.comment }}</div>{% endif %}
+            </div>
+          {% empty %}
+            <div class="text-muted">История пока пустая.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function startOrder(orderId) {
+  $.post("/master/order/" + orderId + "/start/", {"csrfmiddlewaretoken": "{{ csrf_token }}"})
+   .done(function(){ location.reload(); })
+   .fail(function(xhr){ alert(xhr.responseJSON?.error || "Ошибка"); });
+}
+function completeOrder(orderId) {
+  $.post("/master/order/" + orderId + "/complete/", {"csrfmiddlewaretoken": "{{ csrf_token }}"})
+   .done(function(){ window.location.href = "/master/"; })
+   .fail(function(xhr){ alert(xhr.responseJSON?.error || "Ошибка"); });
+}
+</script>
+{% endblock %}
+

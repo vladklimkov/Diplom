@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Заявка создана{% endblock %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h1 class="h5">Заявка принята</h1>
+    <p class="mb-1">Номер заявки: <b>#{{ order.id }}</b></p>
+    <p class="mb-1">Статус: <b>{{ order.get_status_display }}</b></p>
+    <p class="text-muted mb-0">Ожидайте — диспетчер назначит мастера.</p>
+    <a class="btn btn-primary mt-3" href="{% url 'create_order' %}">Создать новую заявку</a>
+  </div>
+</div>
+{% endblock %}
+

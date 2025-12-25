@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Заявка #{{ order.id }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h5">Заявка #{{ order.id }}</h1>
+        <div class="text-muted mb-3">Создана: {{ order.created_at|date:"d.m.Y H:i" }}</div>
+
+        <dl class="row">
+          <dt class="col-sm-4">Категория</dt><dd class="col-sm-8">{{ order.category }}</dd>
+          <dt class="col-sm-4">Клиент</dt><dd class="col-sm-8">{{ order.customer_name }} ({{ order.customer_contact }})</dd>
+          <dt class="col-sm-4">Адрес</dt><dd class="col-sm-8">{{ order.address|default:"-" }}</dd>
+          <dt class="col-sm-4">Описание</dt><dd class="col-sm-8">{{ order.description }}</dd>
+          <dt class="col-sm-4">Статус</dt><dd class="col-sm-8"><b>{{ order.get_status_display }}</b></dd>
+          <dt class="col-sm-4">Мастер</dt>
+          <dd class="col-sm-8">
+            {% if order.assigned_master %}{{ order.assigned_master.username }}{% else %}-{% endif %}
+          </dd>
+        </dl>
+
+        {% if map_url %}
+          <a class="btn btn-outline-primary btn-sm" target="_blank" href="{{ map_url }}">Открыть на карте</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h2 class="h6">Действия диспетчера</h2>
+
+        <form method="post" class="row g-2 align-items-end">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="assign">
+          <div class="col-md-6">
+            <label class="form-label">Назначить мастера</label>
+            <select name="master_id" class="form-select" required>
+              <option value="">Выберите мастера</option>
+              {% for m in masters %}
+                <option value="{{ m.id }}">{{ m.get_full_name|default:m.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Плановая дата</label>
+            <input type="datetime-local" name="planned_date" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-success w-100">Назначить</button>
+          </div>
+        </form>
+
+        <form method="post" class="mt-3">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="cancel">
+          <button class="btn btn-outline-danger">Отменить заявку</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6">История</h2>
+        <div class="list-group">
+          {% for h in history %}
+            <div class="list-group-item">
+              <div class="small text-muted">{{ h.timestamp|date:"d.m.Y H:i" }}</div>
+              <div><b>{{ h.old_status }}</b> → <b>{{ h.new_status }}</b></div>
+              <div class="small">Кто: {{ h.changed_by|default:"-" }}</div>
+              {% if h.comment %}<div class="small text-muted">{{ h.comment }}</div>{% endif %}
+            </div>
+          {% empty %}
+            <div class="text-muted">История пока пустая.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

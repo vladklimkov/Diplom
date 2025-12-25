@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Статистика заявок{% endblock %}
+{% block content %}
+<h1 class="h5 mb-3">Статистика заявок (StatsView)</h1>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <table class="table table-bordered w-auto">
+      <thead>
+      <tr>
+        <th>Статус</th>
+        <th>Количество</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for row in order_counts %}
+        <tr>
+          <td>{{ row.status }}</td>
+          <td>{{ row.count }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="2" class="text-muted">Пока нет заявок для статистики.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Создание заявки{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h5 mb-3">Оставить заявку</h1>
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Категория</label>
+              <input name="category" class="form-control" value="{{ form.data.category|default:'' }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Контакт (телефон/email)</label>
+              <input name="customer_contact" class="form-control" value="{{ form.data.customer_contact|default:'' }}" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Имя клиента</label>
+              <input name="customer_name" class="form-control" value="{{ form.data.customer_name|default:'' }}" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Адрес</label>
+              <input name="address" class="form-control" value="{{ form.data.address|default:'' }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Описание</label>
+              <textarea name="description" class="form-control" rows="4" required>{{ form.data.description|default:'' }}</textarea>
+            </div>
+          </div>
+
+          {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+              Проверьте поля формы. {{ form.non_field_errors }}
+            </div>
+          {% endif %}
+
+          <button class="btn btn-success mt-3">Отправить</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
